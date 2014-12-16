@@ -1,0 +1,121 @@
+<html>
+	<!--Template made by mjkaufer- http://github.com/mjkaufer-->
+	<head>
+		<title>three.js-template</title>
+		<style>
+			body{
+				background-color: #000000;
+				margin: 0px;
+				overflow: hidden;
+				color:white;
+				font-size:0.8em;
+				line-height:0.25em;
+        font-family:sans-serif;
+			}
+			a{
+				color:#F0F0F0;
+			}
+		</style>
+	</head>
+	<body>
+
+    <script src="./js/three.min.js"></script>
+    <script src="./js/controls/TrackballControls.js"></script>
+    <script src="./js/controls/BoxGeometry.js"></script>
+    <!--<script src="js/setup.js"></script>-->
+
+		<div style="position:absolute;margin-left:25px;" id="h">
+			<p>Stuff you want to say here</p>
+			<p>Template by <a href="http://github.com/mjkaufer">mjkaufer</a></p>
+		</div>
+
+		<script>
+			var container;
+			var camera, scene, renderer, controls;
+			var mouseX, mouseY;
+			var windowHalfX = window.innerWidth / 2;
+			var windowHalfY = window.innerHeight / 2;
+			var particleMaterial; //an example particle material to use
+			var count;//increases each call of render
+
+			//declare other vars here
+
+			init();
+			animate();
+
+			function init(){
+				renderer = new THREE.WebGLRenderer({ antialias: true });
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+				
+				
+				camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 3000);
+				camera.position.z = 10;//sets up camera
+
+				scene = new THREE.Scene();//scene setup
+
+				controls = new THREE.TrackballControls(camera);//sets up controls
+				count = 0;
+				var PI2 = Math.PI * 2;//constant for 2pi
+
+
+				//rest of your setup here
+
+			
+				// var normal = new THREE.Vector3( 0, 1, 0 );
+				// var color = new THREE.Color( 0xffaa00 );
+				// var face = new THREE.Face3( 0, 1, 2, normal, color, 0 );
+				// scene.add(face);
+	
+				var light = new THREE.AmbientLight( 0x404040 ); // soft white light
+				scene.add( light );
+				
+				
+				// var map = THREE.ImageUtils.loadTexture( "sprite.gif" );
+	   //         var material = new THREE.SpriteMaterial( { map: map, color: 0xffffff, fog: true } );
+	   //         var sprite = new THREE.Sprite( material );
+	   //         scene.add( sprite )
+	   			map = THREE.ImageUtils.loadTexture( "arrowup.svg" );
+	            material = new THREE.SpriteMaterial( { map: map, color:0xffffff} );
+	            sprite = new THREE.Sprite( material );
+	            sprite.scale.divideScalar(2)
+	            // scene.add(sprite);
+	            spriteGroup = new THREE.Object3D();
+	            scene.add(spriteGroup);
+	            renderer.setClearColor(0xededed);
+	            
+   				vectorFormula = ["Math.sin(x) - Math.cos(y)","Math.sin(y) - Math.cos(x)"];
+	            for(var x = -10; x <= 10; x+=0.5)
+	            	for(var y = -10; y <= 10; y+=0.5){
+	            		var addSprite = sprite.clone();
+	            		addSprite.position.x = x;
+	            		addSprite.position.y = y;
+	            		addSprite.material = material.clone();
+	            		xc = eval(vectorFormula[0]);
+	            		yc = eval(vectorFormula[1]);
+	            		
+	            		addSprite.material.rotation = -Math.atan2(xc,yc)
+	            		// console.log(addSprite)
+	            		// console.log(addSprite.position);
+	            		spriteGroup.add(addSprite);
+	            	}
+            
+			}
+
+			function animate(){
+				requestAnimationFrame(animate);
+				render();
+			}
+
+			function render(){
+				camera.lookAt(scene.position);
+				//stuff you want to happen continuously here
+				controls.update();
+				renderer.render(scene, camera);
+			}
+
+		</script>
+
+    <!-- A bunch of demos I made for you all - we call it after because everything needs to have isntantiated first-->
+	</body>
+</html>
