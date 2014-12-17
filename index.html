@@ -30,15 +30,7 @@
     <!--<script src="js/setup.js"></script>-->
 
 		<div style="position:absolute;margin-left:25px;" id="h">
-			<p>By <a href="http://github.com/mjkaufer">mjkaufer</a></p>
-			<br>
-			<p>X Vector Equation</p>
-			<input id="x" value=""/>
-			<p>Y Vector Equation</p>
-			<input id="y" value=""/>
-			<br>
-			<br>
-			<button onclick="createStuff()">Update</button>
+			<h2>By <a href="http://github.com/mjkaufer">mjkaufer</a></h2>
 		</div>
 		<div id="canvas">
 			
@@ -77,13 +69,16 @@
 				});
 				
 				var Params = function() {
-					this.x = 'Math.cos((x-y))';
-					this.y = 'Math.sin((x+y))';
+					this.x = 'Math.sin(Math.pow(Math.cos((x-y)/2),2))';
+					this.y = 'x/(Math.abs(y)+0.1)';
 					this.width = 3;
 					this.height = 1;
 					this.offsetX = 2;
 					this.offsetY = -1;
 					this.pause = false;
+					this.restart = function(){
+						createStuff()
+					}
 				};
 				
 				params = new Params();
@@ -109,7 +104,8 @@
 				});
 				gui.add(params,"pause").name("Pause").onFinishChange(function(){
 					pause = params.pause;
-				})
+				});
+				gui.add(params,"restart").name("Restart");
 				
 				renderer = new THREE.WebGLRenderer({ antialias: true });
 				renderer.setSize( window.innerWidth, window.innerHeight );
