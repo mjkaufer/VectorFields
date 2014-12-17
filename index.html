@@ -10,11 +10,15 @@
 				color:white;
 				font-size:0.8em;
 				line-height:0.25em;
-        font-family:sans-serif;
+		        font-family:sans-serif;
+		        font-weight:bold;
+		        color:#336E7B;
 			}
 			a{
-				color:#F0F0F0;
+				color:#336E7B;
 			}
+			canvas{z-index:-1;}
+
 		</style>
 	</head>
 	<body>
@@ -25,8 +29,18 @@
     <!--<script src="js/setup.js"></script>-->
 
 		<div style="position:absolute;margin-left:25px;" id="h">
-			<p>Stuff you want to say here</p>
-			<p>Template by <a href="http://github.com/mjkaufer">mjkaufer</a></p>
+			<p>By <a href="http://github.com/mjkaufer">mjkaufer</a></p>
+			<br>
+			<p>X Vector Equation</p>
+			<input id="x" value="Math.cos((x-y))"/>
+			<p>Y Vector Equation</p>
+			<input id="y" value="Math.sin((y+x))"/>
+			<br>
+			<br>
+			<button onclick="createStuff()">Update</button>
+		</div>
+		<div id="canvas">
+			
 		</div>
 
 		<script>
@@ -36,17 +50,28 @@
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
 			var particleMaterial; //an example particle material to use
-			var count;//increases each call of render
+			var count = 0;//increases each call of render
+			vectorFormula = [];
+			var pause = false;
 
 			//declare other vars here
 
 			init();
 			animate();
 
+			function $(el){
+				return document.getElementById(el);
+			}
+
+			function computePoints(x,y){//outputs vector based on vectorformula
+				return [eval(vectorFormula[0]), eval(vectorFormula[1])];
+			}
+
 			function init(){
+				
 				renderer = new THREE.WebGLRenderer({ antialias: true });
 				renderer.setSize( window.innerWidth, window.innerHeight );
-				document.body.appendChild( renderer.domElement );
+				$('canvas').appendChild( renderer.domElement );
 				
 				
 				camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 3000);
@@ -76,21 +101,36 @@
 	   //         var sprite = new THREE.Sprite( material );
 	   //         scene.add( sprite )
 	   			map = THREE.ImageUtils.loadTexture( "arrowup.svg" );
-	            material = new THREE.SpriteMaterial( { map: map, color:0xffffff} );
-	            sprite = new THREE.Sprite( material );
+	            smaterial = new THREE.SpriteMaterial( { map: map, color:0xffffff} );
+	            sprite = new THREE.Sprite( smaterial );
 	            sprite.scale.divideScalar(2)
 	            // scene.add(sprite);
 	            spriteGroup = new THREE.Object3D();
 	            scene.add(spriteGroup);
 	            renderer.setClearColor(0xededed);
 	            
-   				vectorFormula = ["Math.sin(x) - Math.cos(y)","Math.sin(y) - Math.cos(x)"];
-	            for(var x = -10; x <= 10; x+=0.5)
+
+	            
+	            createStuff();
+	            
+
+            
+			}
+			
+			function createStuff(){
+				
+				vectorFormula[0] = $('x').value;
+				vectorFormula[1] = $('y').value;
+				
+				scene.children = [];
+				scene.add(spriteGroup)
+				spriteGroup.children = [];
+				for(var x = -10; x <= 10; x+=0.5)
 	            	for(var y = -10; y <= 10; y+=0.5){
 	            		var addSprite = sprite.clone();
 	            		addSprite.position.x = x;
 	            		addSprite.position.y = y;
-	            		addSprite.material = material.clone();
+	            		addSprite.material = smaterial.clone();
 	            		xc = eval(vectorFormula[0]);
 	            		yc = eval(vectorFormula[1]);
 	            		
@@ -98,8 +138,44 @@
 	            		// console.log(addSprite)
 	            		// console.log(addSprite.position);
 	            		spriteGroup.add(addSprite);
-	            	}
-            
+	            	}				
+
+	            var w = 3;
+	            var h = 1;
+	            var sections = 10;
+	            geometry = new THREE.BoxGeometry( w, h, 0, sections, sections, 0);//10 width and height segments, which means more shit in our geometry which means a better flow
+
+	            // tempgeo = new THREE.BoxGeometry( w, h, 0, sections, sections, 0);//100 width and height segments, which means more shit in our geometry which means a better flow
+	            // geometry = boxGeo(3,1,10,10).clone();
+	            // geometry = new THREE.Geometry();
+	            
+	            // for(var x = -w; x <= w; x+= 2*w)
+	            // 	for(var x = -w; x <= w; x+= 2*w)
+	            
+	            // for(var i = 0; i < geometry.vertices.length; i++){
+	            // 	var v = geometry.vertices[i];
+	            // 	if(Math.abs(v.x) == w/2 || Math.abs(v.y) == h/2)
+	            // 		geometry.vertices.push(v.clone());
+	            // 	else
+	            // 		console.log(v);
+	            // }
+	    //         for(var i = 0; i < geometry.vertices.length; i++){
+					// var v = geometry.vertices[i];
+
+		   //        	if(Math.abs(v.x) != w/2 && Math.abs(v.y) != h/2){
+		   //        		geometry.vertices.splice(i,1);
+		   //        		i-=1;
+		   //        	}
+
+	    //         }
+
+	            // console.log(geometry.vertices.length)
+				material = new THREE.MeshBasicMaterial( {color: 0x03A678} );
+				cube = new THREE.Mesh( geometry, material );
+				cube.position.x += 1;
+				// cube.geometry.dynamic = true
+				// cube.geometry.verticesNeedUpdate = true
+				scene.add( cube );
 			}
 
 			function animate(){
@@ -109,11 +185,84 @@
 
 			function render(){
 				camera.lookAt(scene.position);
+				
+				
+				count+=1;
+				if(!pause)
+					updateGeometryVertices()
+					
+
 				//stuff you want to happen continuously here
 				controls.update();
 				renderer.render(scene, camera);
+				
 			}
+			
+			function updateGeometryVertices(){
+				for(var vindex in cube.geometry.vertices){
+					var vertex = cube.geometry.vertices[vindex];
+					var offset = scene.localToWorld(vertex.clone()).add(cube.position);//this gets the vertex's position relative to the scene's origin, which is what we want
+					
+					var movement = computePoints(offset.x, offset.y);
+					var movementVector = new THREE.Vector3(movement[0],movement[1], 0);
+					movementVector.divideScalar(4);//we don't want it moving too quickly
+					vertex.add(movementVector);//moving the actual thing
+				}
+				cube.geometry.verticesNeedUpdate = true
+				// scene.remove(cube);
+				// cube = new THREE.Mesh( geometry, material );
+				// scene.add( cube );
+				// cube.setGeometry(geometry)
 
+			}
+			
+			// function boxGeo(height, width, hsections, wsections){//a box with only points on the border, with no points on the inside. Will save a shitton of computing time
+			// 	var geo = new THREE.Geometry();
+			// 	for(var x = -width; x <= width; x+= width / wsections)
+			// 		for(var y = -height; y <= height; y+= height / hsections)
+			// 			if(Math.abs(y) == height || Math.abs(x) == width)//if we're on a border position
+			// 				geo.vertices.push(new THREE.Vector3(x,y,0));
+			// 	return geo;
+				
+			// }
+			
+			
+			function boxGeo(width,height, hsections, wsections){//asdfiuahsdifuhasdfiu
+
+					var a = {
+						x:-width/2,
+						y:-height/2
+					}
+					
+					var b = {
+						x:width/2,
+						y:height/2
+					}
+					
+					
+					var geometry = new THREE.Geometry();
+					
+					geometry.vertices.push( new THREE.Vector3( a.x, a.y, 0));
+					geometry.vertices.push( new THREE.Vector3( b.x, a.y, 0));
+					geometry.vertices.push( new THREE.Vector3( b.x, b.y, 0));
+					geometry.vertices.push( new THREE.Vector3( a.x, b.y, 0));
+
+					geometry.faces.push( new THREE.Face3( 0, 1, 2 )); // counter-clockwise winding order
+					geometry.faces.push( new THREE.Face3( 0, 2, 3 ));
+					
+					
+					for(var x = -width; x <= width; x+= width / wsections)//now we'll add the little segments
+						for(var y = -height; y <= height; y+= height / hsections)
+							if((Math.abs(y) == height || Math.abs(x) == width) && geometry.vertices.indexOf(new THREE.Vector3(x,y,0)) == -1)//if we're on a border position
+								geometry.vertices.push(new THREE.Vector3(x,y,0));
+					
+					// geometry.computeCentroids();
+					geometry.computeFaceNormals();
+					geometry.computeVertexNormals();
+
+					return geometry
+			}
+			
 		</script>
 
     <!-- A bunch of demos I made for you all - we call it after because everything needs to have isntantiated first-->
