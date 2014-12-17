@@ -25,16 +25,17 @@
 
     <script src="./js/three.min.js"></script>
     <script src="./js/controls/TrackballControls.js"></script>
-    <script src="./js/controls/BoxGeometry.js"></script>
+    <script src="./js/BoxGeometry.js"></script>
+    <script src="./js/dat.gui.js"></script>
     <!--<script src="js/setup.js"></script>-->
 
 		<div style="position:absolute;margin-left:25px;" id="h">
 			<p>By <a href="http://github.com/mjkaufer">mjkaufer</a></p>
 			<br>
 			<p>X Vector Equation</p>
-			<input id="x" value="Math.cos((x-y))"/>
+			<input id="x" value=""/>
 			<p>Y Vector Equation</p>
-			<input id="y" value="Math.sin((y+x))"/>
+			<input id="y" value=""/>
 			<br>
 			<br>
 			<button onclick="createStuff()">Update</button>
@@ -68,6 +69,47 @@
 			}
 
 			function init(){
+				
+				
+				
+				var gui = new dat.GUI({
+					height : 5 * 32 - 1
+				});
+				
+				var Params = function() {
+					this.x = 'Math.cos((x-y))';
+					this.y = 'Math.sin((x+y))';
+					this.width = 3;
+					this.height = 1;
+					this.offsetX = 2;
+					this.offsetY = -1;
+					this.pause = false;
+				};
+				
+				params = new Params();
+				// gui.remember(params);
+				
+				gui.add(params,"x").name("X Equation").onFinishChange(function(){
+					createStuff();
+				});
+				gui.add(params,"y").name("Y Equation").onFinishChange(function(){
+					createStuff();
+				});
+				gui.add(params,"width").name("Width").onFinishChange(function(){
+					createStuff();
+				});
+				gui.add(params,"height").name("Height").onFinishChange(function(){
+					createStuff();
+				});
+				gui.add(params,"offsetX").name("Shape's X Offset").onFinishChange(function(){
+					createStuff();
+				});
+				gui.add(params,"offsetY").name("Shape's Y Offset").onFinishChange(function(){
+					createStuff();
+				});
+				gui.add(params,"pause").name("Pause").onFinishChange(function(){
+					pause = params.pause;
+				})
 				
 				renderer = new THREE.WebGLRenderer({ antialias: true });
 				renderer.setSize( window.innerWidth, window.innerHeight );
@@ -119,8 +161,8 @@
 			
 			function createStuff(){
 				
-				vectorFormula[0] = $('x').value;
-				vectorFormula[1] = $('y').value;
+				vectorFormula[0] = params.x;
+				vectorFormula[1] = params.y;
 				
 				scene.children = [];
 				scene.add(spriteGroup)
@@ -140,10 +182,10 @@
 	            		spriteGroup.add(addSprite);
 	            	}				
 
-	            var w = 3;
-	            var h = 1;
-	            var sections = 10;
-	            geometry = new THREE.BoxGeometry( w, h, 0, sections, sections, 0);//10 width and height segments, which means more shit in our geometry which means a better flow
+	            var w = params.width;
+	            var h = params.height;
+	            // var sections = 10;
+	            geometry = new THREE.BoxGeometry( w, h, 0, Math.max(Math.round(w*2),4), Math.max(Math.round(h*2),4), 0);//10 width and height segments, which means more shit in our geometry which means a better flow
 
 	            // tempgeo = new THREE.BoxGeometry( w, h, 0, sections, sections, 0);//100 width and height segments, which means more shit in our geometry which means a better flow
 	            // geometry = boxGeo(3,1,10,10).clone();
@@ -170,9 +212,10 @@
 	    //         }
 
 	            // console.log(geometry.vertices.length)
-				material = new THREE.MeshBasicMaterial( {color: 0x03A678} );
+				material = new THREE.MeshBasicMaterial( {color: 0x03A678} );//todo - add color to dat-gui
 				cube = new THREE.Mesh( geometry, material );
-				cube.position.x += 1;
+				cube.position.x += params.offsetX;
+				cube.position.y += params.offsetY;
 				// cube.geometry.dynamic = true
 				// cube.geometry.verticesNeedUpdate = true
 				scene.add( cube );
@@ -193,7 +236,7 @@
 					
 
 				//stuff you want to happen continuously here
-				controls.update();
+				// controls.update();
 				renderer.render(scene, camera);
 				
 			}
