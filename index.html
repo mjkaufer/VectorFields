@@ -77,6 +77,7 @@
 					this.offsetY = -1;
 					this.wcs = 10;
 					this.hcs = 10;
+					this.speed = 4;
 					this.pause = function(){
 						pause = !pause;
 					};
@@ -112,6 +113,7 @@
 				gui.add(params,"offsetY").name("Shape's Y Offset").onFinishChange(function(){
 					createStuff();
 				});
+				gui.add(params,"speed").name("Slowness");
 				gui.add(params,"pause").name("Pause")
 				gui.add(params,"restart").name("Restart");
 				
@@ -252,7 +254,7 @@
 					
 					var movement = computePoints(offset.x, offset.y);
 					var movementVector = new THREE.Vector3(movement[0],movement[1], 0);
-					movementVector.divideScalar(4);//we don't want it moving too quickly
+					movementVector.divideScalar(params.speed);//we don't want it moving too quickly
 					vertex.add(movementVector);//moving the actual thing
 				}
 				cube.geometry.verticesNeedUpdate = true
