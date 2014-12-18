@@ -69,8 +69,8 @@
 				});
 				
 				var Params = function() {
-					this.x = 'y/(x*x+y*y)';
-					this.y = '-x/(x*x+y*y)';
+					this.x = 'Math.sin(t*10)+y';
+					this.y = 'Math.cos(t*10)-x';
 					this.width = 3;
 					this.height = 1;
 					this.offsetX = 2;
@@ -162,10 +162,35 @@
 	            createStuff();
 	            setInterval(function(){
 	            	cube.material.color.offsetHSL(0.001,0,0);
-	            },10);
-	            
+	            },10);	            
 
             
+			}
+			
+			function updateArrows(){
+				for(var i = 0; i < spriteGroup.children.length; i++){
+					var sp = spriteGroup.children[i];
+					sp.rotation = -Math.atan2(xc,yc)
+					var x = sp.position.x;
+					var y = sp.position.y;
+		            		sp.material.rotation = -Math.atan2(eval(vectorFormula[0]),eval(vectorFormula[1]));
+
+				}
+			}
+			
+			function addArrows(){
+				spriteGroup.children = [];
+				for(var x = -10; x <= 10; x+=0.5)
+		            		for(var y = -10; y <= 10; y+=0.5){
+			            		var addSprite = sprite.clone();
+			            		addSprite.position.x = x;
+			            		addSprite.position.y = y;
+			            		addSprite.material = smaterial.clone();
+			            		xc = eval(vectorFormula[0]);
+			            		yc = eval(vectorFormula[1]);
+			            		addSprite.material.rotation = -Math.atan2(xc,yc);
+			            		spriteGroup.add(addSprite);
+		            		}
 			}
 			
 			function createStuff(){
@@ -175,21 +200,7 @@
 				
 				scene.children = [];
 				scene.add(spriteGroup)
-				spriteGroup.children = [];
-				for(var x = -10; x <= 10; x+=0.5)
-	            	for(var y = -10; y <= 10; y+=0.5){
-	            		var addSprite = sprite.clone();
-	            		addSprite.position.x = x;
-	            		addSprite.position.y = y;
-	            		addSprite.material = smaterial.clone();
-	            		xc = eval(vectorFormula[0]);
-	            		yc = eval(vectorFormula[1]);
-	            		
-	            		addSprite.material.rotation = -Math.atan2(xc,yc);
-	            		// console.log(addSprite)
-	            		// console.log(addSprite.position);
-	            		spriteGroup.add(addSprite);
-	            	}				
+				addArrows();				
 
 	            var w = params.width;
 	            var h = params.height;
@@ -239,9 +250,11 @@
 				camera.lookAt(scene.position);
 				
 				
-				t+=0.01;
-				if(!pause)
+				if(!pause){
 					updateGeometryVertices()
+					t+=0.01;
+					updateArrows();
+				}
 					
 
 				//stuff you want to happen continuously here
