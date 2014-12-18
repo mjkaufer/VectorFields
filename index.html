@@ -75,7 +75,11 @@
 					this.height = 1;
 					this.offsetX = 2;
 					this.offsetY = -1;
-					this.pause = false;
+					this.wcs = 10;
+					this.hcs = 10;
+					this.pause = function(){
+						pause = !pause;
+					};
 					this.restart = function(){
 						createStuff()
 					}
@@ -96,15 +100,19 @@
 				gui.add(params,"height").name("Height").onFinishChange(function(){
 					createStuff();
 				});
+				gui.add(params,"wcs").name("Width Cross Sections").onFinishChange(function(){
+					createStuff();
+				});
+				gui.add(params,"hcs").name("Height Cross Sections").onFinishChange(function(){
+					createStuff();
+				});
 				gui.add(params,"offsetX").name("Shape's X Offset").onFinishChange(function(){
 					createStuff();
 				});
 				gui.add(params,"offsetY").name("Shape's Y Offset").onFinishChange(function(){
 					createStuff();
 				});
-				gui.add(params,"pause").name("Pause").onFinishChange(function(){
-					pause = params.pause;
-				});
+				gui.add(params,"pause").name("Pause")
 				gui.add(params,"restart").name("Restart");
 				
 				renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -172,7 +180,7 @@
 	            		xc = eval(vectorFormula[0]);
 	            		yc = eval(vectorFormula[1]);
 	            		
-	            		addSprite.material.rotation = -Math.atan2(xc,yc)
+	            		addSprite.material.rotation = -Math.atan2(xc,yc);
 	            		// console.log(addSprite)
 	            		// console.log(addSprite.position);
 	            		spriteGroup.add(addSprite);
@@ -181,7 +189,7 @@
 	            var w = params.width;
 	            var h = params.height;
 	            // var sections = 10;
-	            geometry = new THREE.BoxGeometry( w, h, 0, Math.max(Math.round(w*2),4), Math.max(Math.round(h*2),4), 0);//10 width and height segments, which means more shit in our geometry which means a better flow
+	            geometry = new THREE.BoxGeometry( w, h, 0, params.wcs, params.hcs, 0);//10 width and height segments, which means more shit in our geometry which means a better flow
 
 	            // tempgeo = new THREE.BoxGeometry( w, h, 0, sections, sections, 0);//100 width and height segments, which means more shit in our geometry which means a better flow
 	            // geometry = boxGeo(3,1,10,10).clone();
