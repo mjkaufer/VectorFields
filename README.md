@@ -1,7 +1,7 @@
 # VectorFields
 A three.js app to visualize vector fields.
 
-Live [here](http://www.kaufer.org/VectorFields/)! You can check out the 2D version [here](https://github.com/mjkaufer/3DVectorFields/)!
+Live [here](http://www.kaufer.org/VectorFields/)! You can check out the 3D version [here](https://github.com/mjkaufer/3DVectorFields/)!
 
 Set equations for the x and y components of the vector field using variables `x` and `y`, representing the location of the point in the coordinate system, along with `t` representing elapsed time. You can also use any JavaScript math function, such as `Math.sin`.
 
